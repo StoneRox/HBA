@@ -71,6 +71,7 @@
 				lastAverage = currentAverage;
 				let delta = Date.now() - lastAverageUpdate;
 				HB.value = Math.round(60000 / delta);
+				lastAverageUpdate = Date.now();
 			}
 		};
 		function getAverageRed() {
