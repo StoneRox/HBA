@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Camera tester</title>
+</head>
+<body>
+	<div>
+		<input type="number" id="fps" value="10">
+		<button id="start">Start</button>
+		<select id="cameraSelect"></select>
+		<video autoplay></video>
+		<canvas></canvas>
+	</div>
+
+	<script>
+		const start = document.getElementById('start');
+		const video = document.querySelector("video");
+		const canvas = document.createElement("canvas");
+		const context = canvas.getContext("2d");
+		let ticker;
+		navigator.mediaDevices.enumerateDevices().then((devices) => {
+			devices.forEach((device) => {
+				if (device.kind === 'videoinput') {
+					let option = document.createElement('option');
+					option.value = device.deviceId;
+					option.innerText = 'Camera' + device.deviceId;
+					cameraSelect.appendChild(option);
+				}
+			});
+		});
+
+		start.onclick = function () {
+			let constraints = {
+				 video: {
+					deviceId: { exact: document.querySelector('select').selectedOptions[0].value },
+				}
+			};
+			navigator.mediaDevices
+				.getUserMedia(constraints)
+				.then(handleSuccess)
+				.catch(handleError);
+			if (ticker) {
+				clearInterval(ticker);
+			}
+			ticker = setInterval(() => {
+				update();
+			}, fps.value);
+		};
+
+		function update () {
+			canvas.width = video.videoWidth;
+			canvas.height = video.videoHeight;
+			context.drawImage(video, 0, 0);
+		};
+
+		function handleSuccess(stream) {
+			video.srcObject = stream;
+		}
+		function handleError(err) {
+			alert('error');
+		}
+	</script>
+
+</body>
+</html>
